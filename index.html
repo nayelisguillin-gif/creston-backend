@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#f4a21e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Creston" />
+  <title>Creston - Salud Mental</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold: #f4a21e;
+      --gold-light: #ffd166;
+      --dark: #0d0d1a;
+      --card: #16213e;
+      --teal: #06d6a0;
+      --red: #ef476f;
+      --text: #e8e8f0;
+      --sub: #a0a0c0;
+      --bubble-bot: #1a2a4a;
+      --bubble-user: #1e3a5f;
+      --activity-bg: #0d2137;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Fondo con estrellas sutiles */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 65% 12%, rgba(255,255,255,0.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 82% 58%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 38% 78%, rgba(255,255,255,0.18) 0%, transparent 100%),
+        radial-gradient(1px 1px at 8%  68%, rgba(255,255,255,0.28) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 22%, rgba(255,255,255,0.18) 0%, transparent 100%),
+        radial-gradient(1px 1px at 52% 52%, rgba(255,255,255,0.12) 0%, transparent 100%),
+        radial-gradient(1px 1px at 28% 44%, rgba(255,255,255,0.15) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #1a1a3e 0%, #0d0d2a 100%);
+      padding: 12px 16px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid rgba(244,162,30,0.2);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: 2.5px solid var(--gold);
+      object-fit: cover;
+      object-position: center 10%;
+      box-shadow: 0 0 16px rgba(244,162,30,0.4);
+      flex-shrink: 0;
+      animation: pulse-ring 3s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 12px rgba(244,162,30,0.3); }
+      50%       { box-shadow: 0 0 24px rgba(244,162,30,0.7), 0 0 40px rgba(244,162,30,0.2); }
+    }
+
+    .header-info { flex: 1; }
+
+    .header-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.25rem;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .header-status {
+      font-size: 0.72rem;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 3px;
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      background: var(--teal);
+      border-radius: 50%;
+      animation: blink 2s infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .header-brand {
+      font-family: 'Fredoka One', cursive;
+      font-size: 0.58rem;
+      color: var(--sub);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+
+    /* ── CHAT AREA ── */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chat-area::-webkit-scrollbar { width: 4px; }
+    .chat-area::-webkit-scrollbar-track { background: transparent; }
+    .chat-area::-webkit-scrollbar-thumb { background: rgba(244,162,30,0.3); border-radius: 2px; }
+
+    /* ── IMAGEN HERO DE CRESTON ── */
+    .creston-hero-wrap {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .creston-hero {
+      width: 75%;
+      max-width: 300px;
+      border-radius: 16px;
+      object-fit: cover;
+      object-position: center 15%;
+      aspect-ratio: 3/4;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.7), 0 0 30px rgba(244,162,30,0.15);
+      display: block;
+    }
+
+    /* ── BUBBLES ── */
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      animation: slide-in 0.3s ease;
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-row.user { flex-direction: row-reverse; }
+
+    .avatar-small {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      object-fit: cover;
+      object-position: center 10%;
+      flex-shrink: 0;
+    }
+
+    .bubble {
+      max-width: 78%;
+      padding: 12px 15px;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .bubble.bot {
+      background: var(--bubble-bot);
+      border: 1px solid rgba(244,162,30,0.15);
+      border-bottom-left-radius: 4px;
+      color: var(--text);
+    }
+
+    .bubble.user {
+      background: var(--bubble-user);
+      border: 1px solid rgba(6,214,160,0.2);
+      border-bottom-right-radius: 4px;
+      color: #c8e6ff;
+    }
+
+    /* ── ACTIVIDAD ── */
+    .activity-card {
+      background: linear-gradient(135deg, var(--activity-bg) 0%, #0a1f35 100%);
+      border: 1.5px solid var(--teal);
+      border-radius: 16px;
+      padding: 14px;
+      position: relative;
+      overflow: hidden;
+      max-width: 78%;
+    }
+
+    .activity-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--gold));
+    }
+
+    .activity-badge {
+      background: var(--teal);
+      color: #000;
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .activity-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1rem;
+      color: var(--gold-light);
+      margin-bottom: 5px;
+    }
+
+    .activity-type {
+      font-size: 0.7rem;
+      color: var(--teal);
+      background: rgba(6,214,160,0.1);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .activity-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .activity-steps li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 0.82rem;
+      color: #c0d8f0;
+    }
+
+    .step-num {
+      background: var(--gold);
+      color: #000;
+      font-weight: 800;
+      font-size: 0.65rem;
+      min-width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .activity-duration {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: var(--gold);
+    }
+
+    /* ── TYPING ── */
+    .typing-bubble {
+      background: var(--bubble-bot);
+      border: 1px solid rgba(244,162,30,0.15);
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+    /* ── CHIPS ── */
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      padding: 4px 14px 8px;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      background: rgba(244,162,30,0.1);
+      border: 1px solid rgba(244,162,30,0.3);
+      color: var(--gold-light);
+      padding: 6px 13px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .chip:active { background: rgba(244,162,30,0.25); transform: scale(0.97); }
+
+    /* ── INPUT ── */
+    .input-area {
+      background: linear-gradient(180deg, transparent 0%, rgba(13,13,26,0.98) 20%);
+      padding: 6px 14px 18px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .speaking-bar {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--teal);
+      padding: 3px 0;
+      min-height: 20px;
+      letter-spacing: 0.03em;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: var(--card);
+      border: 1.5px solid rgba(244,162,30,0.25);
+      border-radius: 28px;
+      padding: 8px 8px 8px 16px;
+      transition: border-color 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: rgba(244,162,30,0.6);
+      box-shadow: 0 0 20px rgba(244,162,30,0.1);
+    }
+
+    #user-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      resize: none;
+      max-height: 100px;
+      min-height: 24px;
+      line-height: 1.4;
+    }
+
+    #user-input::placeholder { color: var(--sub); font-size: 0.85rem; }
+
+    .btn-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      font-size: 1rem;
+    }
+
+    #mic-btn {
+      background: rgba(244,162,30,0.12);
+      color: var(--gold);
+    }
+
+    #mic-btn.listening {
+      background: rgba(239,71,111,0.2);
+      color: var(--red);
+      animation: mic-pulse 1s infinite;
+    }
+
+    @keyframes mic-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+
+    #send-btn {
+      background: linear-gradient(135deg, var(--gold) 0%, #e08b00 100%);
+      color: #000;
+      font-weight: 900;
+    }
+
+    #send-btn:active { transform: scale(0.96); }
+
+    .speak-mini {
+      display: inline-block;
+      margin-top: 7px;
+      font-size: 0.7rem;
+      color: var(--gold);
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+      background: none;
+      border: none;
+      font-family: 'Nunito', sans-serif;
+    }
+    .speak-mini:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div style="display:flex;flex-direction:column;height:100dvh;">
+
+  <!-- Header -->
+  <div class="header">
+    <img src="creston.jpeg" alt="Creston" class="header-avatar" />
+    <div class="header-info">
+      <div class="header-name">Creston</div>
+      <div class="header-status"><span class="status-dot"></span> listo para escucharte</div>
+    </div>
+    <div class="header-right">
+      <div class="header-brand">La Enciclopedia<br>con Plumas</div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat-area" id="chat-area"></div>
+
+  <!-- Chips -->
+  <div class="chips-row" id="chips-row">
+    <div class="chip" onclick="sendChip('Me siento ansioso')">Ansiedad</div>
+    <div class="chip" onclick="sendChip('Estoy muy triste')">Tristeza</div>
+    <div class="chip" onclick="sendChip('Tengo mucho estres')">Estres</div>
+    <div class="chip" onclick="sendChip('Me siento solo')">Soledad</div>
+    <div class="chip" onclick="sendChip('Necesito motivacion')">Motivacion</div>
+    <div class="chip" onclick="sendChip('Quiero hacer una actividad de bienestar')">Actividad</div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <div class="speaking-bar" id="speaking-bar"></div>
+    <div class="input-row">
+      <textarea id="user-input" rows="1" placeholder="Cuentame como te sientes..." autocomplete="off"></textarea>
+      <button class="btn-icon" id="mic-btn" onclick="toggleMic()">&#127908;</button>
+      <button class="btn-icon" id="send-btn" onclick="sendMessage()">&#9658;</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const history = [];
+  let recognition = null;
+  let isListening = false;
+
+  // ── SALUDO INICIAL ────────────────────────────────────────────────────────────
+  window.addEventListener('load', () => {
+    const area = document.getElementById('chat-area');
+
+    // Imagen grande de Creston
+    const wrap = document.createElement('div');
+    wrap.className = 'creston-hero-wrap';
+    const img = document.createElement('img');
+    img.src = 'creston.jpeg';
+    img.alt = 'Creston';
+    img.className = 'creston-hero';
+    wrap.appendChild(img);
+    area.appendChild(wrap);
+
+    // Mensaje de bienvenida
+    const greeting = "Hola! Soy Creston, tu amigo que siempre te escucha.\n\nPuedes contarme como te sientes, que te esta pasando, o preguntarme lo que quieras. Estoy aqui para ti!";
+    addBotMessage(greeting);
+    speakText(greeting);
+  });
+
+  // ── CHIPS ─────────────────────────────────────────────────────────────────────
+  function sendChip(text) {
+    document.getElementById('chips-row').style.display = 'none';
+    document.getElementById('user-input').value = text;
+    sendMessage();
+  }
+
+  // ── MENSAJES ──────────────────────────────────────────────────────────────────
+  function addBotMessage(text) {
+    const area = document.getElementById('chat-area');
+    const row = document.createElement('div');
+    row.className = 'msg-row bot';
+
+    const av = document.createElement('img');
+    av.className = 'avatar-small';
+    av.src = 'creston.jpeg';
+    av.alt = 'Creston';
+    row.appendChild(av);
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble bot';
+
+    const actMatch = text.match(/\[ACTIVIDAD\]([\s\S]*?)\[\/ACTIVIDAD\]/);
+    const mainText = text.replace(/\[ACTIVIDAD\][\s\S]*?\[\/ACTIVIDAD\]/, '').trim();
+
+    bubble.innerHTML = mainText
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+
+    const speakBtn = document.createElement('button');
+    speakBtn.className = 'speak-mini';
+    speakBtn.textContent = 'Escuchar respuesta';
+    speakBtn.onclick = () => speakText(mainText);
+    bubble.appendChild(speakBtn);
+
+    row.appendChild(bubble);
+    area.appendChild(row);
+
+    if (actMatch) {
+      const actRow = document.createElement('div');
+      actRow.className = 'msg-row bot';
+      const pad = document.createElement('div');
+      pad.style.width = '40px';
+      actRow.appendChild(pad);
+      actRow.appendChild(buildActivityCard(actMatch[1]));
+      area.appendChild(actRow);
+    }
+
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const area = document.getElementById('chat-area');
+    const row = document.createElement('div');
+    row.className = 'msg-row user';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble user';
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    area.appendChild(row);
+    area.scrollTop = area.scrollHeight;
+  }
+
+  // ── TARJETA ACTIVIDAD ─────────────────────────────────────────────────────────
+  function buildActivityCard(raw) {
+    const lines = raw.trim().split('\n').map(l => l.trim()).filter(Boolean);
+    let title = '', tipo = '', pasos = [], duracion = '';
+    let inPasos = false;
+
+    for (const line of lines) {
+      if (/^T[íi]tulo:/i.test(line))   title = line.split(':').slice(1).join(':').trim();
+      else if (/^Tipo:/i.test(line))    tipo = line.split(':').slice(1).join(':').trim();
+      else if (/^Duraci[oó]n:/i.test(line)) duracion = line.split(':').slice(1).join(':').trim();
+      else if (/^Pasos:/i.test(line))   inPasos = true;
+      else if (inPasos && /^\d+\./.test(line)) pasos.push(line.replace(/^\d+\.\s*/, '').trim());
+    }
+
+    const card = document.createElement('div');
+    card.className = 'activity-card';
+    card.innerHTML = `
+      <div class="activity-badge">Actividad</div>
+      <div class="activity-title">${title || 'Actividad de bienestar'}</div>
+      ${tipo ? `<div class="activity-type">${tipo}</div>` : ''}
+      <ul class="activity-steps">
+        ${pasos.map((p, i) => `<li><span class="step-num">${i+1}</span><span>${p}</span></li>`).join('')}
+      </ul>
+      ${duracion ? `<div class="activity-duration">Duracion: ${duracion}</div>` : ''}
+    `;
+    return card;
+  }
+
+  // ── ENVIAR MENSAJE ────────────────────────────────────────────────────────────
+  async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    document.getElementById('chips-row').style.display = 'none';
+    addUserMessage(text);
+    history.push({ role: 'user', content: text });
+    input.value = '';
+    input.style.height = 'auto';
+
+    const area = document.getElementById('chat-area');
+    const typingRow = document.createElement('div');
+    typingRow.className = 'msg-row bot';
+    typingRow.id = 'typing-indicator';
+    const av = document.createElement('img');
+    av.className = 'avatar-small';
+    av.src = 'creston.jpeg';
+    const tb = document.createElement('div');
+    tb.className = 'typing-bubble';
+    tb.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    typingRow.appendChild(av);
+    typingRow.appendChild(tb);
+    area.appendChild(typingRow);
+    area.scrollTop = area.scrollHeight;
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history })
+      });
+      const data = await res.json();
+      document.getElementById('typing-indicator')?.remove();
+      const reply = data.response || data.error || 'Lo siento, no pude responder en este momento.';
+      history.push({ role: 'assistant', content: reply });
+      addBotMessage(reply);
+      speakText(reply.replace(/\[ACTIVIDAD\][\s\S]*?\[\/ACTIVIDAD\]/, '').trim());
+    } catch (err) {
+      document.getElementById('typing-indicator')?.remove();
+      addBotMessage('Uy, parece que hubo un problema de conexion. Por favor intenta de nuevo.');
+      console.error(err);
+    }
+  }
+
+  // ── VOZ ───────────────────────────────────────────────────────────────────────
+  function speakText(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const clean = text
+      .replace(/\[ACTIVIDAD\][\s\S]*?\[\/ACTIVIDAD\]/, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+      .trim();
+    if (!clean) return;
+
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.lang = 'es-CO';
+    utter.rate = 1.15;
+    utter.pitch = 1.8;
+    utter.volume = 1;
+
+    const voices = window.speechSynthesis.getVoices();
+    const esVoice = voices.find(v =>
+      v.lang.startsWith('es') && (
+        v.name.toLowerCase().includes('paulina') ||
+        v.name.toLowerCase().includes('monica') ||
+        v.name.toLowerCase().includes('female')
+      )
+    ) || voices.find(v => v.lang.startsWith('es')) || null;
+    if (esVoice) utter.voice = esVoice;
+
+    const bar = document.getElementById('speaking-bar');
+    utter.onstart = () => { if (bar) bar.textContent = 'Creston esta hablando...'; };
+    utter.onend   = () => { if (bar) bar.textContent = ''; };
+    utter.onerror = () => { if (bar) bar.textContent = ''; };
+    window.speechSynthesis.speak(utter);
+  }
+
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+  // ── MICROFONO ─────────────────────────────────────────────────────────────────
+  function toggleMic() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert('Tu navegador no soporta reconocimiento de voz. Intenta con Chrome.');
+      return;
+    }
+    if (isListening) { recognition?.stop(); return; }
+    window.speechSynthesis.cancel();
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.lang = 'es-CO';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    const micBtn = document.getElementById('mic-btn');
+    const bar = document.getElementById('speaking-bar');
+
+    recognition.onstart = () => {
+      isListening = true;
+      micBtn.classList.add('listening');
+      micBtn.innerHTML = '&#9209;';
+      if (bar) bar.textContent = 'Escuchando...';
+    };
+    recognition.onresult = (e) => {
+      document.getElementById('user-input').value = e.results[0][0].transcript;
+      sendMessage();
+    };
+    recognition.onend = () => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+      micBtn.innerHTML = '&#127908;';
+      if (bar) bar.textContent = '';
+    };
+    recognition.onerror = () => {
+      isListening = false;
+      micBtn.classList.remove('listening');
+      micBtn.innerHTML = '&#127908;';
+      if (bar) bar.textContent = '';
+    };
+    recognition.start();
+  }
+
+  // ── TEXTAREA ──────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const ta = document.getElementById('user-input');
+    if (!ta) return;
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
+    });
+    ta.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+  });
+
+  // ── SERVICE WORKER ────────────────────────────────────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
